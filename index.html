@@ -1,20 +1,88 @@
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
+    <meta charset="UTF-8">
     <title>Super Dragon Snuggler 69</title>
+    <style>
+        #Spike {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));
+            transition: width 200ms;
+        }
+
+        #Spike:hover {
+            width: 230px;
+        }
+
+        #Spike:active {
+            width: 220px;
+        }
+
+        #counter-box {
+            background-color: #c691ca;
+            width: 25%;
+            height: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            border-radius: 15px;
+        }
+
+        #counter {
+            line-height: 30px;
+            font-weight: bolder;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            grid-auto-rows: minmax(40px, auto);
+        }
+
+        .grid-item {
+            background-color: #51c456;
+            text-align: center;
+            display: inline-block;
+            position: relative;
+        }
+    </style>
 </head>
-<body>
+<body style="overflow: hidden;">
 <!-- Spike! -->
-<img src="spike.png" width="200px" alt="Spike" id="Spike" onclick="onSpikeClick()"
-     style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+<img src="spike.png" width="200px" alt="Spike" id="Spike" class="spike" onclick="onSpikeClick()">
+
+<!-- The Shop -->
+<div class="grid-container">
+    <button class="grid-item" id="purchaseBooper" onclick="purchaseBooper()">(50) Booper</button>
+    <button class="grid-item" id="purchaseRubber" onclick="purchaseRubber()">(500) Rubber</button>
+    <button class="grid-item" id="purchaseTickler" onclick="purchaseTickler()">(5000) Tickler</button>
+</div>
+
+<br/>
 
 <!-- Click counter -->
-<div id="counter" style="font-weight: bold; font-size: larger; background-color: lightgray; text-align: center;">
-    0
+<div id="counter-box">
+    <span id="counter">
+          0
+    </span>
 </div>
+
+<br/>
+
+<!-- hearts -->
+<div id="hearts" style="overflow: hidden; text-align: center;"></div>
+
 <script>
     // global count variable
     let count = 0;
     let counter = document.getElementById("counter");
+    let hearts = document.getElementById("hearts");
+
+    // buffer our counts so we can start working crazy fast
+    let countBuffer = 0;
 
     // make sure spike isn't draggable
     document.getElementById("Spike").ondragstart = function () {
@@ -23,9 +91,64 @@
 
     // when spike is clicked by the player
     function onSpikeClick() {
-        count++;
-        counter.innerHTML = count.toString();
+        countBuffer++; // increase counter by 1
     }
+
+    // purchase booper
+    function purchaseBooper() {
+        if (count >= 50) {
+            count -= 50;
+            setInterval(addToScore, 1000);
+        }
+
+        // TODO: add visual representations of items owned
+    }
+
+    // purchase rubber
+    function purchaseRubber() {
+        if (count >= 500) {
+            count -= 500;
+            setInterval(addToScore, 500);
+        }
+    }
+
+    // purchase tickler
+    function purchaseTickler() {
+        if (count >= 5000) {
+            count -= 5000;
+            setInterval(addToScore, 10);
+        }
+    }
+
+    // simply increments the score by 1
+    function addToScore() {
+        countBuffer++;
+        // TODO: add visual representation of scores gained
+    }
+
+    // handle our count updating once per frame
+    setInterval(function () {
+        // clear buffer into count variable
+        count += countBuffer;
+        countBuffer = 0;
+
+        // display current value of counter
+        counter.innerHTML = count.toString();
+
+        // also display score with hearts
+        if (count <= 4000) {
+            hearts.innerHTML = "";
+            for (i = 0; i < count; i++) {
+                hearts.innerHTML += "\t\u2764\ufe0f";
+            }
+        }
+
+        // set shop buttons as active based on whether player can afford them
+        // TODO: make this function set and display the price so it can be adjusted dynamically
+        document.getElementById("purchaseBooper").disabled = count < 50;
+        document.getElementById("purchaseRubber").disabled = count < 500;
+        document.getElementById("purchaseTickler").disabled = count < 5000;
+    }, 16); // 16ms per frame for 60fps
 </script>
 
 </body>
