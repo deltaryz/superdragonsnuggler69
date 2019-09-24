@@ -141,8 +141,8 @@
         // also display score with hearts
         if (count <= 4000) {
             let heartString = "";
-            for (let i = 0; i < count; i++) {
-                if (count >= 1) heartString += "\t\u2764\ufe0f";
+            for (let i = 0; i < Math.floor(count); ++i) {
+                heartString += "\t\u2764\ufe0f";
             }
 
             hearts.innerHTML = heartString;
