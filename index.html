@@ -93,8 +93,8 @@
 
     // when spike is clicked by the player
     function onSpikeClick() {
-        if (countPerFrame * 120 < 1) {
-            countBuffer++;
+        if (countPerFrame * 4 < 1) {
+            countBuffer = 1;
         } else {
             countBuffer += (countPerFrame * 4); // increase counter
         }
