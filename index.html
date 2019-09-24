@@ -78,6 +78,7 @@
 <script>
     // global count variable
     let count = 0;
+    let countPerFrame = 0;
     let counter = document.getElementById("counter");
     let hearts = document.getElementById("hearts");
 
@@ -91,14 +92,18 @@
 
     // when spike is clicked by the player
     function onSpikeClick() {
-        countBuffer++; // increase counter by 1
+        if (countPerFrame * 120 < 1) {
+            countBuffer++;
+        } else {
+            countBuffer += (countPerFrame * 120); // increase counter by 1
+        }
     }
 
     // purchase booper
     function purchaseBooper() {
         if (count >= 50) {
             count -= 50;
-            setInterval(addToScore, 1000);
+            countPerFrame += 0.016;
         }
 
         // TODO: add visual representations of items owned
@@ -108,7 +113,7 @@
     function purchaseRubber() {
         if (count >= 500) {
             count -= 500;
-            setInterval(addToScore, 500);
+            countPerFrame += 0.166;
         }
     }
 
@@ -116,31 +121,31 @@
     function purchaseTickler() {
         if (count >= 5000) {
             count -= 5000;
-            setInterval(addToScore, 10);
+            countPerFrame += 1.666;
         }
     }
 
-    // simply increments the score by 1
-    function addToScore() {
-        countBuffer++;
-        // TODO: add visual representation of scores gained
-    }
 
     // handle our count updating once per frame
-    setInterval(function () {
+    function updateCount() {
+        // TODO: add visual representation of scores gained
+        // add our per-frame count into the buffer
+        countBuffer += countPerFrame;
         // clear buffer into count variable
         count += countBuffer;
         countBuffer = 0;
 
         // display current value of counter
-        counter.innerHTML = count.toString();
+        counter.innerHTML = Math.floor(count).toString();
 
         // also display score with hearts
         if (count <= 4000) {
-            hearts.innerHTML = "";
-            for (i = 0; i < count; i++) {
-                hearts.innerHTML += "\t\u2764\ufe0f";
+            let heartString = "";
+            for (let i = 0; i < count; i++) {
+                if (count >= 1) heartString += "\t\u2764\ufe0f";
             }
+
+            hearts.innerHTML = heartString;
         }
 
         // set shop buttons as active based on whether player can afford them
@@ -148,7 +153,11 @@
         document.getElementById("purchaseBooper").disabled = count < 50;
         document.getElementById("purchaseRubber").disabled = count < 500;
         document.getElementById("purchaseTickler").disabled = count < 5000;
-    }, 16); // 16ms per frame for 60fps
+
+        requestAnimationFrame(updateCount)
+    }
+
+    requestAnimationFrame(updateCount)
 </script>
 
 </body>
